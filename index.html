@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Pro - Dashboard</title>
+    <title>Wallet Notes</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -12,15 +12,9 @@
             --card-bg: #ffffff;
             --text-color: #333333;
             --border-color: #ddd;
+            --note-bg: #fffbe6;
+            --note-border: #ffcc80;
             --transition-speed: 0.3s;
-        }
-
-        /* Dark Mode Variables */
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --border-color: #333;
         }
 
         body {
@@ -28,35 +22,38 @@
             margin: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            transition: background-color var(--transition-speed), color var(--transition-speed);
+            height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Align to top for scrolling lists */
-            min-height: 100vh;
+            align-items: center;
         }
 
         .container {
-            width: 100%;
-            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            height: 90%;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
             box-sizing: border-box;
-            max-width: 800px; /* Kept wide but readable */
-            margin: 0 auto;
         }
 
         h1 {
             text-align: center;
             color: var(--primary-color);
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .balance-display {
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
-            margin-bottom: 30px;
-            color: var(--text-color);
+            margin-bottom: 20px;
         }
-        
+
         .balance-label {
             display: block;
             font-size: 1rem;
@@ -64,93 +61,19 @@
             font-weight: normal;
         }
 
-        /* Card Styling */
-        .content {
-            border-top: 4px solid var(--primary-color);
-            border-radius: 12px;
-            padding: 30px;
-            background-color: var(--card-bg);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
-            margin-bottom: 20px;
-        }
-
-        /* Interactive Inputs */
-        .input-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .input-group input, 
-        .input-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            background-color: transparent;
-            color: var(--text-color);
-            font-size: 1.1rem;
-            box-sizing: border-box;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Micro-interaction: Focus State */
-        .input-group input:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
-        }
-
-        /* Quick Add Chips (Buttons to help) */
-        .chip-container {
+        .btn-container {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
             margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 5px;
         }
 
-        .chip {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            transition: all 0.2s;
-            color: var(--text-color);
-        }
-
-        .chip:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .chip.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        /* Buttons */
         .btn-main {
-            width: 100%;
-            padding: 14px;
+            padding: 10px 20px;
             background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: transform 0.1s ease, background-color 0.3s;
             font-weight: bold;
@@ -164,80 +87,106 @@
             transform: scale(0.98);
         }
 
-        /* Recent Transactions List */
-        .transaction-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 20px;
+        .btn-secondary {
+            padding: 10px 20px;
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.3s;
+            font-weight: bold;
         }
 
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            animation: slideIn 0.3s ease-out forwards;
+        .btn-secondary:hover {
+            background-color: #ff6b6b;
         }
 
-        .t-info {
+        .btn-secondary:active {
+            transform: scale(0.98);
+        }
+
+        .content {
+            flex: 1;
             display: flex;
             flex-direction: column;
-        }
-        .t-desc { font-weight: bold; }
-        .t-cat { font-size: 0.8rem; opacity: 0.7; }
-        .t-amount { font-weight: bold; color: var(--danger-color); }
-        .t-amount.income { color: var(--primary-color); }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            justify-content: space-between;
         }
 
-        /* Theme Toggle Switch */
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: 2px solid var(--primary-color);
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
             color: var(--primary-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            font-weight: 600;
         }
 
-        .theme-toggle:hover {
-            background-color: var(--primary-color);
-            color: white;
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .transaction-list {
+            flex: 1;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            background-color: var(--note-bg);
+        }
+
+        .note {
+            background-color: var(--note-bg);
+            border: 2px solid var(--note-border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .note-content {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .note-date {
+            font-size: 0.9rem;
+            color: gray;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-
-    <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
-
     <div class="container">
-        <h1>Wallet Pro</h1>
+        <h1>Wallet Notes</h1>
         <div class="balance-display">
             <span class="balance-label">Current Balance</span>
-            <span id="totalBalance">$2,450.00</span>
+            <span id="totalBalance">$0.00</span>
         </div>
 
-        <!-- Transaction Form -->
-        <div class="content">
-            <!-- Quick Category Chips -->
-            <label style="color:var(--primary-color); font-weight:600; font-size:0.9rem;">Quick Category</label>
-            <div class="chip-container">
-                <button class="chip" onclick="selectCategory(this, 'Food')">🍔 Food</button>
-                <button class="chip" onclick="selectCategory(this, 'Transport')">🚕 Transport</button>
-                <button class="chip" onclick="selectCategory(this, 'Bills')">💡 Bills</button>
-                <button class="chip" onclick="selectCategory(this, 'Entertainment')">🎬 Fun</button>
-                <button class="chip" onclick="selectCategory(this, 'Income')">💰 Income</button>
-            </div>
+        <div class="btn-container">
+            <button class="btn-main" onclick="addToBalance()">Add to Balance</button>
+        </div>
 
+        <div class="content">
             <div class="input-group">
                 <label for="desc">Description</label>
                 <input type="text" id="desc" placeholder="e.g. Starbucks Coffee">
@@ -248,104 +197,84 @@
                 <input type="number" id="amount" placeholder="0.00">
             </div>
 
-            <button class="btn-main" onclick="addTransaction()">Add Transaction</button>
+            <div class="btn-container">
+                <button class="btn-secondary" onclick="resetApp()">Reset</button>
+                <button class="btn-main" onclick="addTransaction()">Add Expense</button>
+            </div>
         </div>
 
-        <!-- Recent List -->
-        <div class="content">
-            <h3 style="margin-top:0; color:var(--text-color);">Recent Activity</h3>
-            <ul class="transaction-list" id="transactionList">
-                <!-- Javascript will add items here -->
-            </ul>
-        </div>
+        <div class="transaction-list" id="transactionList"></div>
     </div>
 
     <script>
-        let currentBalance = 2450.00;
+        let currentBalance = 0;
 
-        // Theme Toggle
-        function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const btn = document.querySelector('.theme-toggle');
-
-            if (currentTheme === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                btn.textContent = '🌙 Dark Mode';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                btn.textContent = '☀️ Light Mode';
-            }
-        }
-
-        // Chip Selection Logic
-        let selectedCategory = 'General';
-        function selectCategory(element, category) {
-            // Remove active class from all chips
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            // Add to clicked
-            element.classList.add('active');
-            selectedCategory = category;
-            
-            // Auto-focus description after picking category (UX Pro touch)
-            document.getElementById('desc').focus();
-        }
-
-        // Add Transaction Logic
+        // Add an expense transaction
         function addTransaction() {
             const descInput = document.getElementById('desc');
             const amountInput = document.getElementById('amount');
-            const list = document.getElementById('transactionList');
-            const balanceDisplay = document.getElementById('totalBalance');
+            const transactionList = document.getElementById('transactionList');
 
-            const desc = descInput.value;
+            const description = descInput.value;
             const amount = parseFloat(amountInput.value);
 
-            if (!desc || !amount) {
-                alert("Please enter both a description and amount.");
+            if (!description || isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid description and amount.");
                 return;
             }
 
-            // Update Logic
-            const isIncome = selectedCategory === 'Income';
-            if (isIncome) {
-                currentBalance += amount;
-            } else {
-                currentBalance -= amount;
-            }
+            // Deduct the amount from the balance
+            currentBalance -= amount;
+            document.getElementById('totalBalance').innerText = `$${currentBalance.toFixed(2)}`;
 
-            // Update UI Balance
-            balanceDisplay.innerText = '$' + currentBalance.toFixed(2);
-            // Flash animation for balance
-            balanceDisplay.style.color = isIncome ? '#4CAF50' : '#ff5252';
-            setTimeout(() => balanceDisplay.style.color = 'var(--text-color)', 500);
+            // Get the current date and time
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
 
-            // Create List Item
-            const li = document.createElement('li');
-            li.className = 'transaction-item';
-            
-            li.innerHTML = `
-                <div class="t-info">
-                    <span class="t-desc">${desc}</span>
-                    <span class="t-cat">${selectedCategory}</span>
-                </div>
-                <span class="t-amount ${isIncome ? 'income' : ''}">
-                    ${isIncome ? '+' : '-'}$${amount.toFixed(2)}
-                </span>
+            // Create a note for the transaction
+            const note = document.createElement('div');
+            note.className = 'note';
+
+            note.innerHTML = `
+                <div class="note-title">${description}</div>
+                <div class="note-content">Amount: -$${amount.toFixed(2)}</div>
+                <div class="note-date">Date: ${date} ${time}</div>
             `;
 
-            // Add to top of list
-            list.insertBefore(li, list.firstChild);
+            // Add the note to the transaction list
+            transactionList.appendChild(note);
 
-            // Clear inputs
+            // Clear the input fields
             descInput.value = '';
             amountInput.value = '';
-            
-            // Reset Button Feedback
-            const btn = document.querySelector('.btn-main');
-            const originalText = btn.innerText;
-            btn.innerText = "Added! ✓";
-            setTimeout(() => btn.innerText = originalText, 1500);
+        }
+
+        // Add to the balance
+        function addToBalance() {
+            const amountInput = document.getElementById('amount');
+            const amount = parseFloat(amountInput.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount to add to the balance.");
+                return;
+            }
+
+            // Add the amount to the balance
+            currentBalance += amount;
+            document.getElementById('totalBalance').innerText = `$${currentBalance.toFixed(2)}`;
+
+            // Clear the input field
+            amountInput.value = '';
+        }
+
+        // Reset the app
+        function resetApp() {
+            currentBalance = 0;
+            document.getElementById('totalBalance').innerText = `$0.00`;
+            document.getElementById('transactionList').innerHTML = '';
+            document.getElementById('desc').value = '';
+            document.getElementById('amount').value = '';
         }
     </script>
 </body>
