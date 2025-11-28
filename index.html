@@ -7,6 +7,7 @@
     <style>
         :root {
             --primary-color: #ff2c2c;
+            --success-color: #4CAF50;
             --danger-color: #ff5252;
             --bg-color: #cfcfcf;
             --card-bg: #310404;
@@ -51,7 +52,16 @@
             text-align: center;
             font-size: 2rem;
             font-weight: bold;
-            margin-bottom: 100px;
+            margin-bottom: 30px;
+            transition: color 0.3s ease;
+        }
+
+        .balance-display.positive {
+            color: var(--success-color);
+        }
+
+        .balance-display.negative {
+            color: var(--danger-color);
         }
 
         .balance-label {
@@ -59,12 +69,14 @@
             font-size: 1rem;
             opacity: 0.7;
             font-weight: normal;
+            color: var(--text-color);
         }
 
         .btn-container {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            gap: 10px;
         }
 
         .btn-main {
@@ -75,15 +87,37 @@
             border-radius: 8px;
             font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.3s;
+            transition: transform 0.1s ease, background-color 0.3s, box-shadow 0.3s;
             font-weight: bold;
         }
 
         .btn-main:hover {
             background-color: #d9db53;
+            box-shadow: 0 4px 15px rgba(217, 219, 83, 0.4);
         }
 
         .btn-main:active {
+            transform: scale(0.98);
+        }
+
+        .btn-success {
+            padding: 10px 20px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.3s, box-shadow 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-success:hover {
+            background-color: #45a049;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-success:active {
             transform: scale(0.98);
         }
 
@@ -95,12 +129,13 @@
             border-radius: 8px;
             font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.1s ease, background-color 0.3s;
+            transition: transform 0.1s ease, background-color 0.3s, box-shadow 0.3s;
             font-weight: bold;
         }
 
         .btn-secondary:hover {
             background-color: #ff6b6b;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
         }
 
         .btn-secondary:active {
@@ -108,14 +143,13 @@
         }
 
         .content {
-            flex: 1;
+            flex: 0;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .input-group label {
@@ -138,6 +172,16 @@
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 44, 44, 0.3);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 230, 0, 0.5);
+        }
+
         .transaction-list {
             flex: 1;
             overflow-y: auto;
@@ -145,6 +189,28 @@
             border-radius: 8px;
             padding: 10px;
             background-color: var(--note-bg);
+            margin-top: 15px;
+            min-height: 200px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
         }
 
         .note {
@@ -154,6 +220,33 @@
             padding: 10px;
             margin-bottom: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .note.income {
+            border-color: var(--success-color);
+        }
+
+        .note.expense {
+            border-color: var(--danger-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .note-title {
@@ -167,115 +260,447 @@
             line-height: 1.6;
         }
 
+        .note-content.income {
+            color: var(--success-color);
+        }
+
+        .note-content.expense {
+            color: var(--danger-color);
+        }
+
         .note-date {
             font-size: 0.9rem;
             color: rgb(255, 255, 255);
             margin-top: 5px;
         }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s, color 0.2s;
+            opacity: 0.7;
+        }
+
+        .delete-btn:hover {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+
+        /* Confirmation Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: var(--card-bg);
+            border: 2px solid var(--success-color);
+            color: var(--text-color);
+            padding: 15px 25px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 1001;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            border-color: var(--danger-color);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Wallet Notes</h1>
-        <div class="balance-display">
+        <h1>💰 Wallet Notes</h1>
+        <div class="balance-display" id="balanceDisplay">
             <span class="balance-label">Current Balance</span>
             <span id="totalBalance">$0.00</span>
-        </div>
-
-        <div class="btn-container">
-            <button class="btn-main" onclick="addToBalance()">Add to Balance</button>
         </div>
 
         <div class="content">
             <div class="input-group">
                 <label for="desc">Description</label>
-                <input type="text" id="desc" placeholder="e.g. Starbucks Coffee">
+                <input type="text" id="desc" placeholder="e.g. Starbucks Coffee" onkeypress="handleKeyPress(event)">
             </div>
 
             <div class="input-group">
                 <label for="amount">Amount ($)</label>
-                <input type="number" id="amount" placeholder="0.00">
+                <input type="number" id="amount" placeholder="0.00" step="0.01" onkeypress="handleKeyPress(event)">
             </div>
 
             <div class="btn-container">
-                <button class="btn-secondary" onclick="resetApp()">Reset</button>
-                <button class="btn-main" onclick="addTransaction()">Add Expense</button>
+                <button class="btn-secondary" onclick="showResetConfirmation()">🗑️ Reset</button>
+                <button class="btn-success" onclick="addToBalance()">💵 Add Income</button>
+                <button class="btn-main" onclick="addTransaction()">💸 Add Expense</button>
             </div>
         </div>
 
-        <div class="transaction-list" id="transactionList"></div>
+        <div class="transaction-list" id="transactionList">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">📝</div>
+                <div class="empty-state-text">No transactions yet.<br>Start by adding income or expenses!</div>
+            </div>
+        </div>
     </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal">
+            <h2>⚠️ Reset All Data?</h2>
+            <p>This will delete all transactions and reset your balance to $0.00. This action cannot be undone!</p>
+            <div class="modal-buttons">
+                <button class="btn-main" onclick="closeResetModal()">Cancel</button>
+                <button class="btn-secondary" onclick="confirmReset()">Yes, Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
     <script>
         let currentBalance = 0;
+        let transactions = [];
+
+        // Load data from localStorage on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            updateBalanceDisplay();
+            renderTransactions();
+        });
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('walletBalance', currentBalance.toString());
+            localStorage.setItem('walletTransactions', JSON.stringify(transactions));
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const savedBalance = localStorage.getItem('walletBalance');
+            const savedTransactions = localStorage.getItem('walletTransactions');
+
+            if (savedBalance !== null) {
+                currentBalance = parseFloat(savedBalance);
+            }
+
+            if (savedTransactions !== null) {
+                transactions = JSON.parse(savedTransactions);
+            }
+        }
+
+        // Update balance display with color indicator
+        function updateBalanceDisplay() {
+            const balanceElement = document.getElementById('totalBalance');
+            const balanceDisplay = document.getElementById('balanceDisplay');
+
+            balanceElement.innerText = `$${currentBalance.toFixed(2)}`;
+
+            // Remove existing classes
+            balanceDisplay.classList.remove('positive', 'negative');
+
+            // Add appropriate class based on balance
+            if (currentBalance > 0) {
+                balanceDisplay.classList.add('positive');
+            } else if (currentBalance < 0) {
+                balanceDisplay.classList.add('negative');
+            }
+        }
+
+        // Render all transactions
+        function renderTransactions() {
+            const transactionList = document.getElementById('transactionList');
+            const emptyState = document.getElementById('emptyState');
+
+            // Clear current list but keep empty state
+            transactionList.innerHTML = '';
+
+            if (transactions.length === 0) {
+                transactionList.innerHTML = `
+                    <div class="empty-state" id="emptyState">
+                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-text">No transactions yet.<br>Start by adding income or expenses!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Render transactions in reverse order (newest first)
+            transactions.slice().reverse().forEach((transaction, index) => {
+                const actualIndex = transactions.length - 1 - index;
+                const note = createNoteElement(transaction, actualIndex);
+                transactionList.appendChild(note);
+            });
+        }
+
+        // Create a note element
+        function createNoteElement(transaction, index) {
+            const note = document.createElement('div');
+            note.className = `note ${transaction.type}`;
+
+            const amountPrefix = transaction.type === 'income' ? '+' : '-';
+            const amountClass = transaction.type === 'income' ? 'income' : 'expense';
+
+            note.innerHTML = `
+                <div class="note-header">
+                    <div class="note-title">${transaction.description}</div>
+                    <button class="delete-btn" onclick="deleteTransaction(${index})" title="Delete transaction">✕</button>
+                </div>
+                <div class="note-content ${amountClass}">Amount: ${amountPrefix}$${transaction.amount.toFixed(2)}</div>
+                <div class="note-date">📅 ${transaction.date} ${transaction.time}</div>
+            `;
+
+            return note;
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                const descInput = document.getElementById('desc');
+                if (descInput.value) {
+                    addTransaction();
+                } else {
+                    addToBalance();
+                }
+            }
+        }
 
         // Add an expense transaction
         function addTransaction() {
             const descInput = document.getElementById('desc');
             const amountInput = document.getElementById('amount');
-            const transactionList = document.getElementById('transactionList');
 
-            const description = descInput.value;
+            const description = descInput.value.trim();
             const amount = parseFloat(amountInput.value);
 
             if (!description || isNaN(amount) || amount <= 0) {
-                alert("Please enter a valid description and amount.");
+                showToast("Please enter a valid description and amount.", true);
                 return;
             }
 
             // Deduct the amount from the balance
             currentBalance -= amount;
-            document.getElementById('totalBalance').innerText = `$${currentBalance.toFixed(2)}`;
 
             // Get the current date and time
             const now = new Date();
             const date = now.toLocaleDateString();
             const time = now.toLocaleTimeString();
 
-            // Create a note for the transaction
-            const note = document.createElement('div');
-            note.className = 'note';
+            // Create transaction object
+            const transaction = {
+                type: 'expense',
+                description: description,
+                amount: amount,
+                date: date,
+                time: time
+            };
 
-            note.innerHTML = `
-                <div class="note-title">${description}</div>
-                <div class="note-content">Amount: -$${amount.toFixed(2)}</div>
-                <div class="note-date">Date: ${date} ${time}</div>
-            `;
+            // Add to transactions array
+            transactions.push(transaction);
 
-            // Add the note to the transaction list
-            transactionList.appendChild(note);
+            // Save and update UI
+            saveData();
+            updateBalanceDisplay();
+            renderTransactions();
 
             // Clear the input fields
             descInput.value = '';
             amountInput.value = '';
+
+            showToast(`Expense of $${amount.toFixed(2)} added! 💸`);
         }
 
-        // Add to the balance
+        // Add to the balance (income)
         function addToBalance() {
+            const descInput = document.getElementById('desc');
             const amountInput = document.getElementById('amount');
             const amount = parseFloat(amountInput.value);
 
             if (isNaN(amount) || amount <= 0) {
-                alert("Please enter a valid amount to add to the balance.");
+                showToast("Please enter a valid amount to add.", true);
                 return;
             }
 
             // Add the amount to the balance
             currentBalance += amount;
-            document.getElementById('totalBalance').innerText = `$${currentBalance.toFixed(2)}`;
 
-            // Clear the input field
+            // Get the current date and time
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+
+            // Get description or use default
+            const description = descInput.value.trim() || 'Income Added';
+
+            // Create transaction object
+            const transaction = {
+                type: 'income',
+                description: description,
+                amount: amount,
+                date: date,
+                time: time
+            };
+
+            // Add to transactions array
+            transactions.push(transaction);
+
+            // Save and update UI
+            saveData();
+            updateBalanceDisplay();
+            renderTransactions();
+
+            // Clear the input fields
+            descInput.value = '';
             amountInput.value = '';
+
+            showToast(`Income of $${amount.toFixed(2)} added! 💵`);
         }
 
-        // Reset the app
-        function resetApp() {
+        // Delete a specific transaction
+        function deleteTransaction(index) {
+            const transaction = transactions[index];
+
+            // Reverse the balance change
+            if (transaction.type === 'income') {
+                currentBalance -= transaction.amount;
+            } else {
+                currentBalance += transaction.amount;
+            }
+
+            // Remove from array
+            transactions.splice(index, 1);
+
+            // Save and update UI
+            saveData();
+            updateBalanceDisplay();
+            renderTransactions();
+
+            showToast('Transaction deleted! 🗑️');
+        }
+
+        // Show reset confirmation modal
+        function showResetConfirmation() {
+            document.getElementById('resetModal').classList.add('active');
+        }
+
+        // Close reset confirmation modal
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('active');
+        }
+
+        // Confirm reset
+        function confirmReset() {
             currentBalance = 0;
-            document.getElementById('totalBalance').innerText = `$0.00`;
-            document.getElementById('transactionList').innerHTML = '';
+            transactions = [];
+
+            // Clear localStorage
+            localStorage.removeItem('walletBalance');
+            localStorage.removeItem('walletTransactions');
+
+            // Update UI
+            updateBalanceDisplay();
+            renderTransactions();
+
+            // Clear inputs
             document.getElementById('desc').value = '';
             document.getElementById('amount').value = '';
+
+            // Close modal
+            closeResetModal();
+
+            showToast('All data has been reset! 🔄');
         }
+
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast' + (isError ? ' error' : '');
+
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('resetModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeResetModal();
+            }
+        });
+
+        // Keyboard shortcut: Escape to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeResetModal();
+            }
+        });
     </script>
 </body>
 </html>
